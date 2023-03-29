@@ -1,16 +1,22 @@
+import java.util.Scanner;
+
+
 public class Main {
 
 
     public static void main(String[] args){
 
-        Gameboard gameboard = new Gameboard();
+        Gameboard gameboard = new Gameboard(2);
         
-        gameboard.printCurrentSpace();
 
-        while(true){
-            System.out.println("I am about to roll the dice");
-            gameboard.moveOnBoard();
-            gameboard.printCurrentSpace();
+        Scanner sc = new Scanner(System.in);
+
+        int x = 0;
+        while(x < 5){
+
+            gameboard.playTurn();
+            x++;
+
         }
 
 

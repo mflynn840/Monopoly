@@ -1,7 +1,12 @@
 import java.util.List;
+import java.util.Scanner;
 
 public class Gameboard {
 
+
+    Player[] players;
+    Player current;
+    int currentIndex = 0;
 
     Gamespace[] gamespaces;
     public final int numberOfSpaces = 40;
@@ -9,16 +14,26 @@ public class Gameboard {
 
     int currPosition = 0;
 
-    public Gameboard(){
+    public Gameboard(int numPlayers){
 
         this.gamespaces = new Gamespace[numberOfSpaces];
         setupBoard();
 
+        this.players = new Player[numPlayers];
+
+        for(int i = 0; i<numPlayers; i++){
+            Player p = new Player("Player" + i, 500);
+            this.players[i] = p;
+        }
+
+        this.current = this.players[this.currentIndex];
+
 
     }
 
-    public void moveOnBoard(){
+    public void playTurn(){
 
+        System.out.println(current);
         Die d1 = new Die();
         Die d2 = new Die();
 
@@ -30,13 +45,34 @@ public class Gameboard {
         System.out.println("I rolled a: " + spacesToMove);
 
 
-        this.currPosition = (this.currPosition + spacesToMove) % this.numberOfSpaces;
+        this.current.currentSpace = (this.current.currentSpace + spacesToMove) % numberOfSpaces;
+        this.currPosition = this.current.currentSpace;
+        this.printCurrentSpace();
 
-        //% 40 = the remainder that is left over when dividing by 40
+        Scanner sc = new Scanner(System.in);
+        
+        if(this.gamespaces[this.currPosition] instanceof PropertySpace){
+            if(!((PropertySpace)this.gamespaces[this.currPosition]).isOwned()){
 
-        //  ->  0-39 % 40 = themselves  PERFECT
-        // ->  40%40 = 0
-        // ->  41%40 = 1
+                System.out.println("Would you like to buy this or auction it? (1-buy/0-auction)");
+
+                if(sc.nextInt() == 1){
+
+                    this.current.purchase(this.gamespaces[this.currPosition]);
+                }
+            }
+        }
+
+
+        if(this.currentIndex == 1){
+            this.current = this.players[0];
+            this.currentIndex = 0;
+        }else{
+            this.current = this.players[1];
+            this.currentIndex = 1;
+        }
+
+        
 
         
             
@@ -59,10 +95,28 @@ public class Gameboard {
         ,"Go To Jail" ,"Pacific Avenue" ,"North Carolina Avenue" ,"Community Chest" ,"Pennsylvania Avenue" ,"Short Line"
         ,"Chance" ,"Park Place" ,"Luxury Tax" ,"Boardwalk"};
 
+        int[] prices = {60, 60, 200, 100, 100, 120, 140, 150, 140, 160, 200, 180, 180, 200, 220, 220, 240, 200, 260, 260, 150, 280, 300, 300, 320, 200, 350, 400};
+        
+
+        String[] eventSpaces = {"Go", "Income Tax", "Chance", "Free Parking", "Community Chest", "Luxury Tax", "Jail / Just Visiting", "Go To Jail"};
+
+
         int position = 0;
 
+        Gamespace temp = new Gamespace();
+
+        int priceIndex = 0;
         for(String spaceName: spaceNames){
-            Gamespace temp = new Gamespace(spaceName, position);
+            if(arrayContains(eventSpaces, spaceName)){
+                temp = new EventSpace(spaceName, position);
+                //System.out.println(temp.name);
+            }else{
+                temp = new PropertySpace(spaceName, position, prices[priceIndex]);
+                priceIndex++;
+                
+                
+            }
+
             gamespaces[position] = temp;
             position++;
         
@@ -74,6 +128,15 @@ public class Gameboard {
         for(Gamespace gp: this.gamespaces){
             System.out.println(gp);
         }
+    }
+
+    public boolean arrayContains(String[] arr, String e){
+        for(int i = 0; i<arr.length; i++){
+            if(arr[i].equals(e)){
+                return true;
+            }
+        }
+        return false;
     }
 
 

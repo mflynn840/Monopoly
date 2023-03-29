@@ -46,12 +46,34 @@ class PropertySpace extends Gamespace{
 
     //Event e;
 
+    boolean isOwned = false;
+    public int price;
+
+    public PropertySpace(String name, int position, int price){
+        super(name, position);
+        this.price = price;
+    
+    }
+
+    public String toString(){
+        return super.toString() + "($" + this.price + ")";
+    }
+
+    public boolean isOwned(){
+        return this.isOwned;
+    }
+
 
 }
 
 class EventSpace extends Gamespace{
 
     //Event e;
+    public EventSpace(String name, int position){super(name, position);}
+
+    public String toString(){
+        return super.toString() + " (Event)";
+    }
 
 
 }
