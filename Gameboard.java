@@ -7,6 +7,8 @@ public class Gameboard {
     Player[] players;
     Player current;
     int currentIndex = 0;
+    Die d1 = new Die();
+    Die d2 = new Die();
 
     Gamespace[] gamespaces;
     public final int numberOfSpaces = 40;
@@ -34,34 +36,51 @@ public class Gameboard {
     public void playTurn(){
 
         System.out.println(current);
-        Die d1 = new Die();
-        Die d2 = new Die();
-
-        int roll1 = d1.roll();
-        int roll2 = d2.roll();
-
-        int spacesToMove = roll1+roll2;
-
-        System.out.println("I rolled a: " + spacesToMove);
-
-
-        this.current.currentSpace = (this.current.currentSpace + spacesToMove) % numberOfSpaces;
-        this.currPosition = this.current.currentSpace;
-        this.printCurrentSpace();
-
-        Scanner sc = new Scanner(System.in);
         
-        if(this.gamespaces[this.currPosition] instanceof PropertySpace){
-            if(!((PropertySpace)this.gamespaces[this.currPosition]).isOwned()){
 
-                System.out.println("Would you like to buy this or auction it? (1-buy/0-auction)");
+        int roll1= 0; int roll2 = 0;
 
-                if(sc.nextInt() == 1){
+        int jailCounter = 0;
 
-                    this.current.purchase(this.gamespaces[this.currPosition]);
+        while(roll1 == roll2){
+            roll1 = this.d1.roll();
+            roll2 = this.d2.roll();
+
+            int spacesToMove = roll1+roll2;
+
+            System.out.println("I rolled a: " + spacesToMove);
+
+            if(roll1 == roll2){
+                System.out.println("Doubles");
+                if(jailCounter == 3){
+                    this.current.position = JAIL;
+                    break;
                 }
             }
+
+
+            this.current.currentSpace = (this.current.currentSpace + spacesToMove) % numberOfSpaces;
+            this.currPosition = this.current.currentSpace;
+            this.printCurrentSpace();
+
+            Scanner sc = new Scanner(System.in);
+        
+            if(this.gamespaces[this.currPosition] instanceof PropertySpace){
+                if(!((PropertySpace)this.gamespaces[this.currPosition]).isOwned()){
+
+                    System.out.println("Would you like to buy this or auction it? (1-buy/0-auction)");
+
+                    if(sc.nextInt() == 1){
+
+                        this.current.purchase(this.gamespaces[this.currPosition]);
+                    }
+                }
+            }
+
+            jailCounter++;
         }
+
+
 
 
         if(this.currentIndex == 1){
@@ -121,6 +140,10 @@ public class Gameboard {
             position++;
         
         }
+    }
+
+    public void rollTurn(){
+
     }
 
 
